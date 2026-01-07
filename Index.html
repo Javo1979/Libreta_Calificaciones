@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="es" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libreta de Calificaciones</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .status-badge {
+            border-radius: 9999px;
+            padding: 0.375rem 0.875rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .supplementary {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .failed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table-row:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        .select-custom {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23667eea'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5rem;
+        }
+
+        .score-cell {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        #downloadableArea {
+            background: white;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .no-print,
+            .no-download {
+                display: none !important;
+            }
+
+            #reportCard {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            #downloadableArea {
+                padding: 20px !important;
+            }
+
+            .card-shadow {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb;
+            }
+
+            .table-header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .table-header th {
+                color: white !important;
+                padding: 10px 15px !important;
+            }
+
+            .approved {
+                background-color: #d1fae5 !important;
+                color: #065f46 !important;
+            }
+
+            .supplementary {
+                background-color: #fef3c7 !important;
+                color: #92400e !important;
+            }
+
+            .failed {
+                background-color: #fee2e2 !important;
+                color: #991b1b !important;
+            }
+
+            .gradient-bg {
+                display: none !important;
+            }
+
+            .bg-gradient-to-r {
+                background: #764ba2 !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse;
+            }
+
+            td,
+            th {
+                border: 1px solid #e5e7eb;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+        }
+    </style>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+</head>
+
+<body class="h-full w-full bg-gray-50">
+    <div class="min-h-full w-full overflow-auto"><!-- Header -->
+        <div class="gradient-bg text-white py-8 px-6 no-download">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-4"><i
+                            class="fas fa-graduation-cap text-4xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold mb-1">Sistema de Calificaciones</h1>
+                        <p class="text-lg opacity-90">Consulta tu libreta académica</p>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Student Selection -->
+        <div class="max-w-6xl mx-auto px-6 -mt-6 mb-8 no-download">
+            <div class="bg-white rounded-xl card-shadow p-6"><label for="studentSelect"
+                    class="block text-sm font-semibold text-gray-700 mb-3"> <i
+                        class="fas fa-user-graduate text-purple-600 mr-2"></i> Selecciona tu nombre </label> <select
+                    id="studentSelect"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent select-custom appearance-none text-gray-700 font-medium transition-all">
+                    <option value="">-- Elige un estudiante --</option>
+                </select>
+            </div>
+        </div><!-- Report Card -->
+        <div id="reportCard" class="max-w-6xl mx-auto px-6 pb-12 hidden"><!-- Downloadable Area -->
+            <div id="downloadableArea"><!-- Institution Header -->
+                <div class="bg-white rounded-xl card-shadow p-8 mb-6">
+                    <div class="text-center border-b-4 border-purple-600 pb-6">
+                        <div
+                            class="inline-block bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-full mb-4">
+                            <i class="fas fa-school mr-2"></i> <span id="institutionName"
+                                class="font-bold text-lg">UNIDAD EDUCATIVA PCEI TUNGURAHUA</span>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Libreta de Calificaciones</h2>
+                        <p class="text-gray-600 font-medium"><i class="fas fa-calendar-alt mr-2"></i> <span>Año Lectivo:
+                            </span><span id="academicYear" class="font-semibold">AGOSTO 2025 - ENERO 2026</span></p>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
+                            <div class="bg-purple-100 p-3 rounded-lg"><i
+                                    class="fas fa-user text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold">Estudiante</p>
+                                <p id="studentName" class="text-lg font-bold text-gray-800"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
+                            <div class="bg-purple-100 p-3 rounded-lg"><i
+                                    class="fas fa-chart-line text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase font-semibold">Promedio General</p>
+                                <p id="generalAverage" class="text-lg font-bold text-gray-800"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- Grades Table -->
+                <div class="bg-white rounded-xl card-shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="table-header">
+                                    <th class="px-6 py-4 text-left font-bold"><i class="fas fa-book mr-2"></i>Asignatura
+                                    </th>
+                                    <th class="px-6 py-4 text-center font-bold"><i
+                                            class="fas fa-clipboard-check mr-2"></i>Etapa 1</th>
+                                    <th class="px-6 py-4 text-center font-bold"><i
+                                            class="fas fa-clipboard-check mr-2"></i>Etapa 2</th>
+                                    <th class="px-6 py-4 text-center font-bold"><i
+                                            class="fas fa-calculator mr-2"></i>Promedio</th>
+                                    <th class="px-6 py-4 text-center font-bold"><i
+                                            class="fas fa-certificate mr-2"></i>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradesTableBody"><!-- Grades will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- Action Buttons -->
+            <div class="mt-6 text-center no-print">
+                <button id="printButton"
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <i class="fas fa-print"></i>
+                    <span>Imprimir / Guardar PDF</span>
+                </button>
+                <p class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Usa Ctrl+P o el botón verde. En el diálogo de impresión, elige "Guardar como PDF" como destino.
+                </p>
+            </div>
+        </div>
+    </div><!-- Empty State -->
+    <div id="emptyState" class="max-w-6xl mx-auto px-6 pb-12">
+        <div class="bg-white rounded-xl card-shadow p-12 text-center">
+            <div class="inline-block bg-purple-100 p-6 rounded-full mb-4"><i
+                    class="fas fa-clipboard-list text-purple-600 text-5xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Selecciona un estudiante</h3>
+            <p class="text-gray-600">Elige un nombre del menú desplegable para ver la libreta de calificaciones</p>
+        </div>
+    </div>
+    </div>
+    <script>
+        const defaultConfig = {
+            institution_name: "UNIDAD EDUCATIVA PCEI TUNGURAHUA",
+            academic_year: "AGOSTO 2025 - ENERO 2026",
+            approved_label: "Aprobado",
+            supplementary_label: "Supletorio",
+            failed_label: "Pierde"
+        };
+
+        let config = { ...defaultConfig };
+
+        // Real student data
+        const studentsData = {
+            "CHUCUYAN ANGAMARCA CARLOS VINICIO": [
+                { subject: "Ciencias Naturales", stage1: 9.20, stage2: 6.86 },
+                { subject: "Educación Cultural y Artística", stage1: 8.86, stage2: 7.00 },
+                { subject: "Educación Física", stage1: 9.33, stage2: 8.60 },
+                { subject: "Estudios Sociales", stage1: 0, stage2: 0 },
+                { subject: "Inglés", stage1: 8.91, stage2: 6.71 },
+                { subject: "Lengua y Literatura", stage1: 9.46, stage2: 7.13 },
+                { subject: "Matemáticas", stage1: 8.93, stage2: 8.40 },
+                { subject: "Cívica", stage1: 9.53, stage2: 9.53 }
+            ],
+            "GARCES POAQUIZA AMELIA MICHELLE": [
+                { subject: "Ciencias Naturales", stage1: 9.13, stage2: 9.86 },
+                { subject: "Educación Cultural y Artística", stage1: 8.09, stage2: 9.06 },
+                { subject: "Educación Física", stage1: 9.73, stage2: 9.80 },
+                { subject: "Estudios Sociales", stage1: 7.24, stage2: 9.74 },
+                { subject: "Inglés", stage1: 8.64, stage2: 9.44 },
+                { subject: "Lengua y Literatura", stage1: 8.66, stage2: 9.53 },
+                { subject: "Matemáticas", stage1: 8.60, stage2: 9.00 },
+                { subject: "Cívica", stage1: 8.93, stage2: 8.93 }
+            ],
+            "GIRALDO MONTENEGRO DIGNA MARIBEL": [
+                { subject: "Ciencias Naturales", stage1: 9.73, stage2: 8.46 },
+                { subject: "Educación Cultural y Artística", stage1: 8.93, stage2: 9.60 },
+                { subject: "Educación Física", stage1: 9.33, stage2: 9.60 },
+                { subject: "Estudios Sociales", stage1: 9.31, stage2: 8.50 },
+                { subject: "Inglés", stage1: 8.28, stage2: 7.46 },
+                { subject: "Lengua y Literatura", stage1: 9.20, stage2: 8.66 },
+                { subject: "Matemáticas", stage1: 9.20, stage2: 8.60 },
+                { subject: "Cívica", stage1: 9.33, stage2: 9.33 }
+            ],
+            "GIRALDO MONTENEGRO GLENDA KATHERINE": [
+                { subject: "Ciencias Naturales", stage1: 10.00, stage2: 9.20 },
+                { subject: "Educación Cultural y Artística", stage1: 9.20, stage2: 9.06 },
+                { subject: "Educación Física", stage1: 10.00, stage2: 10.00 },
+                { subject: "Estudios Sociales", stage1: 9.40, stage2: 8.60 },
+                { subject: "Inglés", stage1: 8.46, stage2: 7.15 },
+                { subject: "Lengua y Literatura", stage1: 9.33, stage2: 8.66 },
+                { subject: "Matemáticas", stage1: 8.60, stage2: 7.80 },
+                { subject: "Cívica", stage1: 9.46, stage2: 9.46 }
+            ],
+            "ILLANES ARIUCURI JIMMY ROLANDO": [
+                { subject: "Ciencias Naturales", stage1: 8.46, stage2: 8.86 },
+                { subject: "Educación Cultural y Artística", stage1: 0, stage2: 0 },
+                { subject: "Educación Física", stage1: 7.00, stage2: 8.40 },
+                { subject: "Estudios Sociales", stage1: 6.60, stage2: 7.68 },
+                { subject: "Inglés", stage1: 8.28, stage2: 8.91 },
+                { subject: "Lengua y Literatura", stage1: 7.13, stage2: 7.00 },
+                { subject: "Matemáticas", stage1: 7.86, stage2: 6.60 },
+                { subject: "Cívica", stage1: 7.53, stage2: 7.53 }
+            ],
+            "MANOBANDA TELENCHANA LOURDES MARIA": [
+                { subject: "Ciencias Naturales", stage1: 8.20, stage2: 8.66 },
+                { subject: "Educación Cultural y Artística", stage1: 7.41, stage2: 8.20 },
+                { subject: "Educación F  sica", stage1: 9.00, stage2: 9.46 },
+                { subject: "Estudios Sociales", stage1: 8.33, stage2: 8.38 },
+                { subject: "Inglés", stage1: 8.53, stage2: 8.05 },
+                { subject: "Lengua y Literatura", stage1: 9.26, stage2: 9.20 },
+                { subject: "Matemáticas", stage1: 8.13, stage2: 8.40 },
+                { subject: "Cívica", stage1: 9.40, stage2: 9.40 }
+            ],
+            "RUIZ PEÑALOZA ROSENDO DANILO": [
+                { subject: "Ciencias Naturales", stage1: 9.13, stage2: 8.93 },
+                { subject: "Educación Cultural y Artística", stage1: 9.53, stage2: 9.26 },
+                { subject: "Educación Física", stage1: 8.73, stage2: 9.40 },
+                { subject: "Estudios Sociales", stage1: 7.76, stage2: 8.30 },
+                { subject: "Inglés", stage1: 9.71, stage2: 9.26 },
+                { subject: "Lengua y Literatura", stage1: 9.46, stage2: 9.63 },
+                { subject: "Matemáticas", stage1: 8.60, stage2: 8.60 },
+                { subject: "Cívica", stage1: 9.73, stage2: 9.73 }
+            ]
+        };
+
+        function calculateAverage(stage1, stage2) {
+            if (stage1 === 0 && stage2 === 0) return "N/A";
+            if (stage1 === 0) return stage2.toFixed(2);
+            if (stage2 === 0) return stage1.toFixed(2);
+            return ((stage1 + stage2) / 2).toFixed(2);
+        }
+
+        function getStatus(average) {
+            if (average === "N/A") {
+                return {
+                    class: 'failed',
+                    icon: 'fa-exclamation-circle',
+                    text: 'Sin Datos'
+                };
+            }
+            const avg = parseFloat(average);
+            if (avg >= 7) {
+                return {
+                    class: 'approved',
+                    icon: 'fa-check-circle',
+                    text: config.approved_label || defaultConfig.approved_label
+                };
+            } else if (avg >= 4) {
+                return {
+                    class: 'supplementary',
+                    icon: 'fa-exclamation-triangle',
+                    text: config.supplementary_label || defaultConfig.supplementary_label
+                };
+            } else {
+                return {
+                    class: 'failed',
+                    icon: 'fa-times-circle',
+                    text: config.failed_label || defaultConfig.failed_label
+                };
+            }
+        }
+
+        function populateStudentSelect() {
+            const select = document.getElementById('studentSelect');
+            const sortedStudents = Object.keys(studentsData).sort();
+            sortedStudents.forEach(studentName => {
+                const option = document.createElement('option');
+                option.value = studentName;
+                option.textContent = studentName;
+                select.appendChild(option);
+            });
+        }
+
+        function displayReportCard(studentName) {
+            const grades = studentsData[studentName];
+            if (!grades) return;
+
+            document.getElementById('studentName').textContent = studentName;
+
+            const tableBody = document.getElementById('gradesTableBody');
+            tableBody.innerHTML = '';
+
+            let totalAverage = 0;
+            let validGrades = 0;
+
+            grades.forEach(grade => {
+                const average = calculateAverage(grade.stage1, grade.stage2);
+                const status = getStatus(average);
+
+                if (average !== "N/A") {
+                    totalAverage += parseFloat(average);
+                    validGrades++;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'table-row border-b border-gray-200';
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-semibold text-gray-800">
+                        <i class="fas fa-book-open text-purple-600 mr-2"></i>
+                        ${grade.subject}
+                    </td>
+                    <td class="px-6 py-4 text-center score-cell text-gray-700">${grade.stage1 === 0 ? '-' : grade.stage1.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center score-cell text-gray-700">${grade.stage2 === 0 ? '-' : grade.stage2.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center score-cell text-purple-700">${average}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="status-badge ${status.class}">
+                            <i class="fas ${status.icon} mr-1"></i>
+                            ${status.text}
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            const generalAvg = validGrades > 0 ? (totalAverage / validGrades).toFixed(2) : "N/A";
+            document.getElementById('generalAverage').textContent = generalAvg;
+
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('reportCard').classList.remove('hidden');
+        }
+
+        document.getElementById('studentSelect').addEventListener('change', function (e) {
+            const studentName = e.target.value;
+            if (studentName) {
+                displayReportCard(studentName);
+            } else {
+                document.getElementById('reportCard').classList.add('hidden');
+                document.getElementById('emptyState').classList.remove('hidden');
+            }
+        });
+
+
+        // Print / PDF functionality
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+
+        async function onConfigChange(newConfig) {
+            config = { ...newConfig };
+
+            document.getElementById('institutionName').textContent = config.institution_name || defaultConfig.institution_name;
+            document.getElementById('academicYear').textContent = config.academic_year || defaultConfig.academic_year;
+
+            const currentStudent = document.getElementById('studentSelect').value;
+            if (currentStudent) {
+                displayReportCard(currentStudent);
+            }
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["institution_name", config.institution_name || defaultConfig.institution_name],
+                ["academic_year", config.academic_year || defaultConfig.academic_year],
+                ["approved_label", config.approved_label || defaultConfig.approved_label],
+                ["supplementary_label", config.supplementary_label || defaultConfig.supplementary_label],
+                ["failed_label", config.failed_label || defaultConfig.failed_label]
+            ]);
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        populateStudentSelect();
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9ba5f85b654e8258',t:'MTc2NzgxNTI4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
