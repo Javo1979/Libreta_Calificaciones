@@ -178,13 +178,15 @@
             </div>
         </div><!-- Student Selection -->
         <div class="max-w-6xl mx-auto px-6 -mt-6 mb-8 no-download">
-            <div class="bg-white rounded-xl card-shadow p-6"><label for="studentSelect"
+            <div class="bg-white rounded-xl card-shadow p-6"><label for="studentIdInput"
                     class="block text-sm font-semibold text-gray-700 mb-3"> <i
-                        class="fas fa-user-graduate text-purple-600 mr-2"></i> Selecciona tu nombre </label> <select
-                    id="studentSelect"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent select-custom appearance-none text-gray-700 font-medium transition-all">
-                    <option value="">-- Elige un estudiante --</option>
-                </select>
+                        class="fas fa-user-graduate text-purple-600 mr-2"></i> Ingresa tu número de cédula </label> <div class="flex flex-col md:flex-row gap-3">
+                    <input id="studentIdInput" type="text" inputmode="numeric" maxlength="10" placeholder="Escribe tu cédula" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-700 font-medium transition-all" />
+                    <button id="searchButton" class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all">
+                        <i class="fas fa-search mr-2"></i>Consultar
+                    </button>
+                </div>
+                <p id="searchMessage" class="mt-3 text-sm font-medium"></p>
             </div>
         </div><!-- Report Card -->
         <div id="reportCard" class="max-w-6xl mx-auto px-6 pb-12 hidden"><!-- Downloadable Area -->
@@ -198,7 +200,7 @@
                         </div>
                         <h2 class="text-3xl font-bold text-gray-800 mb-2">Libreta de Calificaciones</h2>
                         <p class="text-gray-600 font-medium"><i class="fas fa-calendar-alt mr-2"></i> <span>Año Lectivo:
-                            </span><span id="academicYear" class="font-semibold">AGOSTO 2025 - ENERO 2026</span></p>
+                            </span><span id="academicYear" class="font-semibold">ENERO-JUNIO 2026</span></p>
                     </div>
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
@@ -208,6 +210,7 @@
                             <div>
                                 <p class="text-xs text-gray-500 uppercase font-semibold">Estudiante</p>
                                 <p id="studentName" class="text-lg font-bold text-gray-800"></p>
+<p id="studentId" class="text-sm text-gray-500 font-medium"></p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
@@ -228,12 +231,7 @@
                                 <tr class="table-header">
                                     <th class="px-6 py-4 text-left font-bold"><i class="fas fa-book mr-2"></i>Asignatura
                                     </th>
-                                    <th class="px-6 py-4 text-center font-bold"><i
-                                            class="fas fa-clipboard-check mr-2"></i>Etapa 1</th>
-                                    <th class="px-6 py-4 text-center font-bold"><i
-                                            class="fas fa-clipboard-check mr-2"></i>Etapa 2</th>
-                                    <th class="px-6 py-4 text-center font-bold"><i
-                                            class="fas fa-calculator mr-2"></i>Promedio</th>
+                                    <th class="px-6 py-4 text-center font-bold"><i class="fas fa-calculator mr-2"></i>Calificación Final</th>
                                     <th class="px-6 py-4 text-center font-bold"><i
                                             class="fas fa-certificate mr-2"></i>Estado</th>
                                 </tr>
@@ -270,7 +268,7 @@
     <script>
         const defaultConfig = {
             institution_name: "UNIDAD EDUCATIVA PCEI TUNGURAHUA",
-            academic_year: "AGOSTO 2025 - ENERO 2026",
+            academic_year: "ENERO-JUNIO 2026",
             approved_label: "Aprobado",
             supplementary_label: "Supletorio",
             failed_label: "Pierde"
@@ -280,87 +278,25 @@
 
         // Real student data
         const studentsData = {
-            "CHUCUYAN ANGAMARCA CARLOS VINICIO": [
-                { subject: "Ciencias Naturales", stage1: 9.20, stage2: 6.86 },
-                { subject: "Educación Cultural y Artística", stage1: 8.86, stage2: 7.00 },
-                { subject: "Educación Física", stage1: 9.33, stage2: 8.60 },
-                { subject: "Estudios Sociales", stage1: 0, stage2: 0 },
-                { subject: "Inglés", stage1: 8.91, stage2: 6.71 },
-                { subject: "Lengua y Literatura", stage1: 9.46, stage2: 7.13 },
-                { subject: "Matemáticas", stage1: 8.93, stage2: 8.40 },
-                { subject: "Cívica", stage1: 9.53, stage2: 9.53 }
-            ],
-            "GARCES POAQUIZA AMELIA MICHELLE": [
-                { subject: "Ciencias Naturales", stage1: 9.13, stage2: 9.86 },
-                { subject: "Educación Cultural y Artística", stage1: 8.09, stage2: 9.06 },
-                { subject: "Educación Física", stage1: 9.73, stage2: 9.80 },
-                { subject: "Estudios Sociales", stage1: 7.24, stage2: 9.74 },
-                { subject: "Inglés", stage1: 8.64, stage2: 9.44 },
-                { subject: "Lengua y Literatura", stage1: 8.66, stage2: 9.53 },
-                { subject: "Matemáticas", stage1: 8.60, stage2: 9.00 },
-                { subject: "Cívica", stage1: 8.93, stage2: 8.93 }
-            ],
-            "GIRALDO MONTENEGRO DIGNA MARIBEL": [
-                { subject: "Ciencias Naturales", stage1: 9.73, stage2: 8.46 },
-                { subject: "Educación Cultural y Artística", stage1: 8.93, stage2: 9.60 },
-                { subject: "Educación Física", stage1: 9.33, stage2: 9.60 },
-                { subject: "Estudios Sociales", stage1: 9.31, stage2: 8.50 },
-                { subject: "Inglés", stage1: 8.28, stage2: 7.46 },
-                { subject: "Lengua y Literatura", stage1: 9.20, stage2: 8.66 },
-                { subject: "Matemáticas", stage1: 9.20, stage2: 8.60 },
-                { subject: "Cívica", stage1: 9.33, stage2: 9.33 }
-            ],
-            "GIRALDO MONTENEGRO GLENDA KATHERINE": [
-                { subject: "Ciencias Naturales", stage1: 10.00, stage2: 9.20 },
-                { subject: "Educación Cultural y Artística", stage1: 9.20, stage2: 9.06 },
-                { subject: "Educación Física", stage1: 10.00, stage2: 10.00 },
-                { subject: "Estudios Sociales", stage1: 9.40, stage2: 8.60 },
-                { subject: "Inglés", stage1: 8.46, stage2: 7.15 },
-                { subject: "Lengua y Literatura", stage1: 9.33, stage2: 8.66 },
-                { subject: "Matemáticas", stage1: 8.60, stage2: 7.80 },
-                { subject: "Cívica", stage1: 9.46, stage2: 9.46 }
-            ],
-            "ILLANES ARIUCURI JIMMY ROLANDO": [
-                { subject: "Ciencias Naturales", stage1: 8.46, stage2: 8.86 },
-                { subject: "Educación Cultural y Artística", stage1: 0, stage2: 0 },
-                { subject: "Educación Física", stage1: 7.00, stage2: 8.40 },
-                { subject: "Estudios Sociales", stage1: 6.60, stage2: 7.68 },
-                { subject: "Inglés", stage1: 8.28, stage2: 8.91 },
-                { subject: "Lengua y Literatura", stage1: 7.13, stage2: 7.00 },
-                { subject: "Matemáticas", stage1: 7.86, stage2: 6.60 },
-                { subject: "Cívica", stage1: 7.53, stage2: 7.53 }
-            ],
-            "MANOBANDA TELENCHANA LOURDES MARIA": [
-                { subject: "Ciencias Naturales", stage1: 8.20, stage2: 8.66 },
-                { subject: "Educación Cultural y Artística", stage1: 7.41, stage2: 8.20 },
-                { subject: "Educación F  sica", stage1: 9.00, stage2: 9.46 },
-                { subject: "Estudios Sociales", stage1: 8.33, stage2: 8.38 },
-                { subject: "Inglés", stage1: 8.53, stage2: 8.05 },
-                { subject: "Lengua y Literatura", stage1: 9.26, stage2: 9.20 },
-                { subject: "Matemáticas", stage1: 8.13, stage2: 8.40 },
-                { subject: "Cívica", stage1: 9.40, stage2: 9.40 }
-            ],
-            "RUIZ PEÑALOZA ROSENDO DANILO": [
-                { subject: "Ciencias Naturales", stage1: 9.13, stage2: 8.93 },
-                { subject: "Educación Cultural y Artística", stage1: 9.53, stage2: 9.26 },
-                { subject: "Educación Física", stage1: 8.73, stage2: 9.40 },
-                { subject: "Estudios Sociales", stage1: 7.76, stage2: 8.30 },
-                { subject: "Inglés", stage1: 9.71, stage2: 9.26 },
-                { subject: "Lengua y Literatura", stage1: 9.46, stage2: 9.63 },
-                { subject: "Matemáticas", stage1: 8.60, stage2: 8.60 },
-                { subject: "Cívica", stage1: 9.73, stage2: 9.73 }
-            ]
-        };
+    "1206218040": { name: "CABEZAS LOPEZ LEON ALBERTO", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1802513919": { name: "CASHABAMBA NIAMI OLGA MARINA", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1724537061": { name: "CAUJA CABEZAS ALEXANDRA ESTEFANIA", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1601025172": { name: "CHIARMACHI AYUY FLORA GERARDINA", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "0504068412": { name: "CHIMBORAZO POAQUIZA SEGUNDO OLGER", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1850413517": { name: "CISNEROS SIGUENCIA LUIS DAVID", grades: [ { subject: "Matemática", stage1: 9.60 }, { subject: "Lengua y Literatura", stage1: 9.13 }, { subject: "Educación Artística", stage1: 9.34 }, { subject: "Educación Física", stage1: 10.00 }, { subject: "Inglés", stage1: 9.33 }, { subject: "Ciencias Naturales", stage1: 9.33 }, { subject: "Estudios Sociales", stage1: 7.76 }, { subject: "Cívica", stage1: 10.00 } ] },
+    "1105992190": { name: "FLORES TORRES JOSE ROBERTO", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1600684896": { name: "FLORES VILLAFUERTE MARIA VANESSA", grades: [ { subject: "Matemática", stage1: 7.73 }, { subject: "Lengua y Literatura", stage1: 8.40 }, { subject: "Educación Artística", stage1: 8.26 }, { subject: "Educación Física", stage1: 9.60 }, { subject: "Inglés", stage1: 8.13 }, { subject: "Ciencias Naturales", stage1: 9.53 }, { subject: "Estudios Sociales", stage1: 8.54 }, { subject: "Cívica", stage1: 9.00 } ] },
+    "1804680591": { name: "HINOJOSA CARVAJAL IRMA MARGOTH", grades: [ { subject: "Matemática", stage1: 7.80 }, { subject: "Lengua y Literatura", stage1: 8.86 }, { subject: "Educación Artística", stage1: 9.77 }, { subject: "Educación Física", stage1: 9.26 }, { subject: "Inglés", stage1: 8.93 }, { subject: "Ciencias Naturales", stage1: 9.35 }, { subject: "Estudios Sociales", stage1: 8.58 }, { subject: "Cívica", stage1: 10.00 } ] },
+    "0606004034": { name: "MOROCHO QUIZHPI JONATHAN STEVEN", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1317477857": { name: "PALADINES VITE OLIVER LEONEL", grades: [ { subject: "Matemática", stage1: 7.73 }, { subject: "Lengua y Literatura", stage1: 7.93 }, { subject: "Educación Artística", stage1: 7.46 }, { subject: "Educación Física", stage1: 7.40 }, { subject: "Inglés", stage1: 8.93 }, { subject: "Ciencias Naturales", stage1: 9.00 }, { subject: "Estudios Sociales", stage1: 6.37 }, { subject: "Cívica", stage1: 7.00 } ] },
+    "1850143593": { name: "PORTILLA CENTENO KARLA DANIELA", grades: [ { subject: "Matemática", stage1: 0 }, { subject: "Lengua y Literatura", stage1: 0 }, { subject: "Educación Artística", stage1: 0 }, { subject: "Educación Física", stage1: 0 }, { subject: "Inglés", stage1: 0 }, { subject: "Ciencias Naturales", stage1: 0 }, { subject: "Estudios Sociales", stage1: 0 }, { subject: "Cívica", stage1: 0 } ] },
+    "1751886704": { name: "VASQUEZ MURILLO JONATHAN SALVADOR", grades: [ { subject: "Matemática", stage1: 8.66 }, { subject: "Lengua y Literatura", stage1: 8.53 }, { subject: "Educación Artística", stage1: 8.28 }, { subject: "Educación Física", stage1: 8.80 }, { subject: "Inglés", stage1: 8.66 }, { subject: "Ciencias Naturales", stage1: 9.46 }, { subject: "Estudios Sociales", stage1: 7.06 }, { subject: "Cívica", stage1: 10.00 } ] },
+    "1310786205": { name: "ZAMBRANO DELGADO MARIA KATHERINE", grades: [ { subject: "Matemática", stage1: 8.73 }, { subject: "Lengua y Literatura", stage1: 8.93 }, { subject: "Educación Artística", stage1: 9.20 }, { subject: "Educación Física", stage1: 9.20 }, { subject: "Inglés", stage1: 9.40 }, { subject: "Ciencias Naturales", stage1: 9.60 }, { subject: "Estudios Sociales", stage1: 8.00 }, { subject: "Cívica", stage1: 8.00 } ] }
+};
 
-        function calculateAverage(stage1, stage2) {
-            if (stage1 === 0 && stage2 === 0) return "N/A";
-            if (stage1 === 0) return stage2.toFixed(2);
-            if (stage2 === 0) return stage1.toFixed(2);
-            return ((stage1 + stage2) / 2).toFixed(2);
-        }
-
+        
         function getStatus(average) {
-            if (average === "N/A") {
+            if (average === "N/A" || average === 0 || average === "0.00") {
                 return {
                     class: 'failed',
                     icon: 'fa-exclamation-circle',
@@ -369,42 +305,24 @@
             }
             const avg = parseFloat(average);
             if (avg >= 7) {
-                return {
-                    class: 'approved',
-                    icon: 'fa-check-circle',
-                    text: config.approved_label || defaultConfig.approved_label
-                };
+                return { class: 'approved', icon: 'fa-check-circle', text: 'Aprobado' };
             } else if (avg >= 4) {
-                return {
-                    class: 'supplementary',
-                    icon: 'fa-exclamation-triangle',
-                    text: config.supplementary_label || defaultConfig.supplementary_label
-                };
+                return { class: 'supplementary', icon: 'fa-exclamation-triangle', text: 'Supletorio' };
             } else {
-                return {
-                    class: 'failed',
-                    icon: 'fa-times-circle',
-                    text: config.failed_label || defaultConfig.failed_label
-                };
+                return { class: 'failed', icon: 'fa-times-circle', text: 'Reprobado' };
             }
         }
 
-        function populateStudentSelect() {
-            const select = document.getElementById('studentSelect');
-            const sortedStudents = Object.keys(studentsData).sort();
-            sortedStudents.forEach(studentName => {
-                const option = document.createElement('option');
-                option.value = studentName;
-                option.textContent = studentName;
-                select.appendChild(option);
-            });
+        function normalizeCedula(value) {
+            return String(value || '').replace(/\D/g, '').padStart(10, '0').slice(-10);
         }
 
-        function displayReportCard(studentName) {
-            const grades = studentsData[studentName];
-            if (!grades) return;
+        function displayReportCard(studentId) {
+            const student = studentsData[studentId];
+            if (!student) return;
 
-            document.getElementById('studentName').textContent = studentName;
+            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentId').textContent = "Cédula: " + studentId;
 
             const tableBody = document.getElementById('gradesTableBody');
             tableBody.innerHTML = '';
@@ -412,12 +330,25 @@
             let totalAverage = 0;
             let validGrades = 0;
 
-            grades.forEach(grade => {
-                const average = calculateAverage(grade.stage1, grade.stage2);
-                const status = getStatus(average);
+            student.grades.forEach(grade => {
+            const subjectIcons = {
+                "Matemática": "fa-calculator",
+                "Lengua y Literatura": "fa-book",
+                "Educación Artística": "fa-palette",
+                "Educación Física": "fa-running",
+                "Inglés": "fa-globe",
+                "Ciencias Naturales": "fa-leaf",
+                "Estudios Sociales": "fa-landmark",
+                "Cívica": "fa-scale-balanced"
+            };
+            const iconClass = subjectIcons[grade.subject] || "fa-book-open";
 
-                if (average !== "N/A") {
-                    totalAverage += parseFloat(average);
+                const gradeValue = grade.stage1;
+                const status = getStatus(gradeValue);
+                const displayScore = gradeValue === 0 ? "-" : gradeValue.toFixed(2);
+
+                if (gradeValue !== 0) {
+                    totalAverage += gradeValue;
                     validGrades++;
                 }
 
@@ -425,12 +356,10 @@
                 row.className = 'table-row border-b border-gray-200';
                 row.innerHTML = `
                     <td class="px-6 py-4 font-semibold text-gray-800">
-                        <i class="fas fa-book-open text-purple-600 mr-2"></i>
+                        <i class="fas ${iconClass} text-purple-600 mr-2"></i>
                         ${grade.subject}
                     </td>
-                    <td class="px-6 py-4 text-center score-cell text-gray-700">${grade.stage1 === 0 ? '-' : grade.stage1.toFixed(2)}</td>
-                    <td class="px-6 py-4 text-center score-cell text-gray-700">${grade.stage2 === 0 ? '-' : grade.stage2.toFixed(2)}</td>
-                    <td class="px-6 py-4 text-center score-cell text-purple-700">${average}</td>
+                    <td class="px-6 py-4 text-center score-cell text-purple-700">${displayScore}</td>
                     <td class="px-6 py-4 text-center">
                         <span class="status-badge ${status.class}">
                             <i class="fas ${status.icon} mr-1"></i>
@@ -444,19 +373,51 @@
             const generalAvg = validGrades > 0 ? (totalAverage / validGrades).toFixed(2) : "N/A";
             document.getElementById('generalAverage').textContent = generalAvg;
 
-            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('emptyState')?.classList.add('hidden');
             document.getElementById('reportCard').classList.remove('hidden');
+
+            const msg = document.getElementById('searchMessage');
+            if(msg) { msg.textContent = ''; }
         }
 
-        document.getElementById('studentSelect').addEventListener('change', function (e) {
-            const studentName = e.target.value;
-            if (studentName) {
-                displayReportCard(studentName);
+        function lookupStudent() {
+            const rawValue = document.getElementById('studentIdInput').value;
+            const studentId = normalizeCedula(rawValue);
+            const message = document.getElementById('searchMessage');
+
+            if (!rawValue || rawValue.trim() === '') {
+                document.getElementById('reportCard').classList.add('hidden');
+                document.getElementById('emptyState')?.classList.remove('hidden');
+                if (message) {
+                    message.textContent = 'Por favor, ingresa un número de cédula.';
+                    message.className = 'mt-3 text-sm text-red-600 font-medium';
+                }
+                return;
+            }
+
+            if (studentsData[studentId]) {
+                displayReportCard(studentId);
             } else {
                 document.getElementById('reportCard').classList.add('hidden');
-                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('emptyState')?.classList.remove('hidden');
+                if (message) {
+                    message.textContent = 'No se encontró un estudiante con esa cédula.';
+                    message.className = 'mt-3 text-sm text-red-600 font-medium';
+                }
+            }
+        }
+
+        document.getElementById('searchButton').addEventListener('click', lookupStudent);
+        document.getElementById('studentIdInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                lookupStudent();
             }
         });
+        document.getElementById('studentIdInput').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        });
+
 
 
         // Print / PDF functionality
@@ -504,7 +465,7 @@
             });
         }
 
-        populateStudentSelect();
+        
     </script>
     <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9ba5f85b654e8258',t:'MTc2NzgxNTI4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
