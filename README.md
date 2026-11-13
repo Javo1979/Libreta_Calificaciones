@@ -21,7 +21,7 @@ Abrir `http://127.0.0.1:5000`. El registro privado debe existir en `datos/califi
 - En **Environment → Secret Files**, crear `calificaciones.json` con el contenido del registro local. No subirlo al repositorio ni a la carpeta `static/`.
 - El plan gratuito puede suspenderse por inactividad y tardar en responder a la primera visita. Verificar las condiciones y disponibilidad actuales en Render antes de crear el servicio. No se requiere contratar un plan de pago para esta configuración.
 
-GitHub Pages no ejecuta Python. El `index.html` anterior se conserva temporalmente hasta verificar el nuevo alojamiento; posteriormente puede dirigir al portal nuevo.
+GitHub Pages no ejecuta Python. El `index.html` de la raíz dirige al portal en **https://libreta-calificaciones-pcei.onrender.com/**, donde se ejecuta la aplicación. El enlace anterior **https://javo1979.github.io/Libreta_Calificaciones/** se conserva como acceso al nuevo portal.
 
 ## Privacidad
 
